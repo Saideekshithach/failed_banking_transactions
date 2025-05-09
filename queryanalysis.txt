@@ -1,0 +1,43 @@
+SELECT * FROM EXTERNAL_QUERY("dataprop-457706.us-central1.test", "SELECT * FROM failed_transactions");
+
+/* Total Failed Transactions by City*/
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT city, COUNT(*) AS failed_count FROM failed_transactions WHERE status = 'FAILED' GROUP BY city ORDER BY failed_count DESC"
+);
+
+
+
+ /*Daily Failure Trend */
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT date, COUNT(*) AS daily_failures FROM failed_transactions WHERE status ='FAILED' GROUP BY date ORDER BY date"
+);
+
+
+/Average Failed Amount per City/
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT city, AVG(amount) AS avg_failed_amount FROM failed_transactions WHERE status = 'FAILED' GROUP BY city ORDER BY avg_failed_amount DESC"
+);
+
+/Top 5 Branches by Failed Transaction Amount/
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT branch_id, SUM(amount) AS total_failed_amount FROM failed_transactions WHERE status = 'FAILED' GROUP BY branch_id ORDER BY total_failed_amount DESC LIMIT 5"
+);
+
+SELECT * FROM EXTERNAL_QUERY(
+"dataprop-457706.us-central1.test","SELECT city,COUNT() FILTER (WHERE status = 'FAILED') AS failed_count,COUNT() AS total_count,ROUND(COUNT() FILTER (WHERE status = 'FAILED') * 100.0 / COUNT(), 2) AS failure_rate_percent FROM failed_transactions GROUP BY city ORDER BY failure_rate_percent DESC");
+
+
+
+/Most Recent Failure Per Branch/
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT branch_id, MAX(date) AS last_failure_date FROM failed_transactions WHERE status = 'FAILED' GROUP BY branch_id"
+);
+/Find Duplicate Transactions by ID/
+
+SELECT * FROM EXTERNAL_QUERY(
+  "dataprop-457706.us-central1.test","SELECT transaction_id, COUNT(*) AS occurrences FROM failed_transactions GROUP BY transaction_id HAVING occurrences > 1"
+);
+
+/. Failed Transactions by Day of Week/
+SELECT * FROM EXTERNAL_QUERY("dataprop-457706.us-central1.test","SELECT DAYNAME(date) AS day_of_week, COUNT(*) AS failed_count FROM failed_transactions WHERE status = 'FAILED'GROUP BY day_of_week ORDER BY FIELD(day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')"
+);
